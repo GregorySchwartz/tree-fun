@@ -9,6 +9,7 @@ module Tree where
 import Data.Tree
 import qualified Data.Map as M
 import Control.Applicative
+import qualified Data.Foldable as F
 
 -- Local
 import Types
@@ -22,6 +23,20 @@ boolToInt False = 0
 leaves :: Tree a -> [a]
 leaves (Node { rootLabel = x, subForest = [] }) = [x]
 leaves (Node { rootLabel = _, subForest = xs }) = concatMap leaves xs
+
+-- | Return the labels of the leaves of the tree with their relative heights
+-- from the root (the input number you give determines how many steps away the
+-- leaves are, should almost always start at 0)
+leavesHeight :: Int -> Tree a -> [(a, Int)]
+leavesHeight h (Node { rootLabel = x, subForest = [] }) = [(x, h)]
+leavesHeight h (Node { rootLabel = _, subForest = xs }) =
+    concatMap (leavesHeight (h + 1)) xs
+
+-- | Return the inner nodes of the tree
+innerNodes :: Tree a -> [a]
+innerNodes (Node { rootLabel = _, subForest = [] }) = []
+innerNodes (Node { rootLabel = x, subForest = xs }) = x
+                                                    : concatMap innerNodes xs
 
 -- | Return the map of distances from each leaf to another leaf
 getDistanceMap :: (Eq a, Ord a) => Tree a -> DistanceMap a
@@ -44,3 +59,6 @@ getDistance n@(Node { rootLabel = _, subForest = xs }) x y
     notShared node = (elem x (leaves node) || elem y (leaves node))
                   && not (elem x (leaves node) && elem y (leaves node))
 
+-- | Get the sum of a tree for a tree with numbered labels
+sumTree :: (Num a) => Tree a -> a
+sumTree = F.foldl' (+) 0
