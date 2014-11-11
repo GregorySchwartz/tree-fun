@@ -80,6 +80,21 @@ getDistance n@(Node { rootLabel = _, subForest = xs }) x y
       where
         ls = leaves n
 
+-- | Return the map of distances from each leaf to another leaf
+getDistanceMapSuperNode :: (Eq a, Ord a) => Tree (SuperNode a) -> DistanceMap a
+getDistanceMapSuperNode tree = M.fromListWith (M.unionWith (S.><))
+                             $ (\x y -> if x == y
+                                            then
+                                                (x , M.singleton 0 (S.singleton y))
+                                            else ( x
+                                                 , M.singleton
+                                                   (getDistanceSuperNode tree x y)
+                                                   (S.singleton y) ) )
+                           <$> allLeaves
+                           <*> allLeaves
+  where
+    allLeaves = M.keys . myLeaves . rootLabel $ tree
+
 -- | Find the distance between two leaves in a leafNode tree. Begin recording
 -- distances when record is True (should have height starting at 0)
 getDistanceSuperNode :: (Eq a, Ord a) => Tree (SuperNode a) -> a -> a -> Int
