@@ -122,7 +122,9 @@ sumTree = F.foldl' (+) 0
 -- nodes)
 toSuperNodeTree :: (Ord a) => SuperNode a -> Tree a -> Tree (SuperNode a)
 toSuperNodeTree p n@(Node { rootLabel = x, subForest = xs }) =
-    Node { rootLabel = SuperNode { myRootLabel = x
-                                 , myLeaves = leavesHeight 0 n
-                                 , myParent = p }
-         , subForest = map (toSuperNodeTree p) xs }
+    Node { rootLabel = newNode
+         , subForest = map (toSuperNodeTree newNode) xs }
+  where
+    newNode = SuperNode { myRootLabel = x
+                        , myLeaves = leavesHeight 0 n
+                        , myParent = p }
