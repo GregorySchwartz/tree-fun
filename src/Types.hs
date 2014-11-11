@@ -11,10 +11,10 @@ import qualified Data.Sequence as S
 
 -- Algebraic
 -- Tree with super smart nodes
-data SuperNode a = Root | SuperNode { myRootLabel :: a
-                                    , myParent    :: SuperNode a
-                                    , myLeaves    :: M.Map a Int }
-                                    deriving (Read, Show, Eq, Ord)
+data SuperNode a = SuperRoot | SuperNode { myRootLabel :: a
+                                         , myParent    :: SuperNode a
+                                         , myLeaves    :: M.Map a Int }
+                                         deriving (Read, Show, Eq, Ord)
 
 -- Basic
 type Height = Int
