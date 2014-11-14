@@ -8,8 +8,13 @@ module FunTree.Types where
 -- Built-in
 import qualified Data.Map as M
 import qualified Data.Sequence as S
+import Data.Tree
 
 -- Algebraic
+data PropertySuperTree a b = PropertySuperTree
+                             { superTree       :: Tree (SuperNode a)
+                             , superProperties :: PropertyMap a b }
+
 -- Tree with super smart nodes
 data SuperNode a = SuperRoot | SuperNode { myRootLabel :: a
                                          , myParent    :: SuperNode a
