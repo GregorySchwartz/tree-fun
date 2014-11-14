@@ -15,11 +15,10 @@ data SuperNode a = SuperRoot | SuperNode { myRootLabel :: a
                                          , myParent    :: SuperNode a
                                          , myLeaves    :: M.Map a Int }
                                          deriving (Read, Show, Eq, Ord)
-data LabelNode a b = LabelNode { myPointer :: a
-                               , myLabel   :: b }
 
 -- Basic
 type Height = Int
 
 -- Advanced
 type DistanceMap a = M.Map a (M.Map Int (S.Seq a))
+type PropertyMap a b = M.Map a b

@@ -100,7 +100,7 @@ getDistanceMapSuperNode tree = M.fromListWith (M.unionWith (S.><))
 getDistanceSuperNode :: (Eq a, Ord a) => Tree (SuperNode a) -> a -> a -> Int
 getDistanceSuperNode (Node { rootLabel = SuperNode { myLeaves = ls
                                                    , myParent = p }
-                                  , subForest = ts } ) x y
+                           , subForest = ts } ) x y
     | shared ls    = head
                    . filter (/= 1)
                    . map (\a -> getDistanceSuperNode a x y)
