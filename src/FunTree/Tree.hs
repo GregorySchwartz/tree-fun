@@ -6,6 +6,7 @@
 module FunTree.Tree where
 
 -- Built-in
+import Data.List
 import Data.Tree
 import qualified Data.Map as M
 import Data.Maybe
@@ -48,6 +49,14 @@ innerNodes :: Tree a -> [a]
 innerNodes (Node { rootLabel = _, subForest = [] }) = []
 innerNodes (Node { rootLabel = x, subForest = xs }) = x
                                                     : concatMap innerNodes xs
+
+-- | Return the number of leaves in a tree
+numLeaves :: (Num b) => Tree a -> b
+numLeaves = genericLength . leaves
+
+-- | Return the number of inner nodes of a tree
+numInner :: (Num b) => Tree a -> b
+numInner = genericLength . innerNodes
 
 -- | Return the map of distances from each leaf to another leaf
 getDistanceMap :: (Eq a, Ord a) => Tree a -> DistanceMap a
