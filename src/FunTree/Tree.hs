@@ -58,6 +58,10 @@ numLeaves = genericLength . leaves
 numInner :: (Num b) => Tree a -> b
 numInner = genericLength . innerNodes
 
+-- | Return the list of properties in a property map for a tree
+getProperties :: (Eq b) => PropertyMap a b -> [b]
+getProperties = nub . M.elems
+
 -- | Return the map of distances from each leaf to another leaf
 getDistanceMap :: (Eq a, Ord a) => Tree a -> DistanceMap a
 getDistanceMap tree = M.fromListWith (M.unionWith (S.><))
