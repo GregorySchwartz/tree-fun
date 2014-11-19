@@ -13,6 +13,7 @@ import Data.Maybe
 import qualified Data.Sequence as S
 import Control.Applicative
 import qualified Data.Foldable as F
+import Control.Monad.State
 
 -- Local
 import FunTree.Types
@@ -21,6 +22,11 @@ import FunTree.Types
 boolToInt :: Bool -> Int
 boolToInt True  = 1
 boolToInt False = 0
+
+-- | Find out if a node is a leaf or not
+isLeaf :: Tree a -> Bool
+isLeaf (Node { subForest = [] }) = True
+isLeaf _                         = False
 
 -- | Return the labels of the leaves of the tree
 leaves :: Tree a -> [a]
@@ -34,6 +40,29 @@ leavesHeight :: (Ord a) => Int -> Tree a -> M.Map a Int
 leavesHeight h (Node { rootLabel = x, subForest = [] }) = M.singleton x h
 leavesHeight h (Node { rootLabel = _, subForest = xs }) =
     M.unions . map (leavesHeight (h + 1)) $ xs
+
+-- | Return the labels of the leaves of the tree with their relative heights
+-- from the root (the input number you give determines how many steps away the
+-- leaves are, should almost always start at 0). Also, here we give leaves that
+-- share a parent a separate label.
+leavesCommonHeight :: (Ord a) => Int -> Tree a -> M.Map a (Int, Int)
+leavesCommonHeight startHeight tree = evalState (iter startHeight tree) 0
+  where
+    iter h (Node { rootLabel = x, subForest = [] }) = do
+        label <- get
+        return $ M.singleton x (h, label)
+    iter h (Node { rootLabel = _, subForest = xs }) = do
+        -- Get leaves and assign them the label
+        ls    <- mapM (iter (h + 1)) . filter isLeaf $ xs
+
+        -- Increment label
+        label <- get
+        put $ label + 1
+
+        -- Get rest of the trees
+        ts    <- mapM (iter (h + 1)) . filter (not . isLeaf) $ xs
+        -- Combine the results
+        return . M.unions . (++) ts $ ls
 
 -- | Return the labels of the leaves of the tree with their relative heights
 -- from the root (the input number you give determines how many steps away the
@@ -125,7 +154,7 @@ getDistanceSuperNode (Node { rootLabel = SuperNode { myLeaves = ls
     notShared xs = (M.member x xs || M.member y xs)
                 && not (M.member x xs && M.member y xs)
     shared xs    = M.member x xs && M.member y xs
-    getParentLeafDist a b = fromJust . M.lookup a . myLeaves $ b
+    getParentLeafDist a b = fst . fromJust . M.lookup a . myLeaves $ b
 
 -- | Get the sum of a tree for a tree with numbered labels
 sumTree :: (Num a) => Tree a -> a
@@ -139,5 +168,5 @@ toSuperNodeTree p n@(Node { rootLabel = x, subForest = xs }) =
          , subForest = map (toSuperNodeTree newNode) xs }
   where
     newNode = SuperNode { myRootLabel = x
-                        , myLeaves = leavesHeight 0 n
+                        , myLeaves = leavesCommonHeight 0 n
                         , myParent = p }

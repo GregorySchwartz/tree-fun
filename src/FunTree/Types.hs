@@ -18,7 +18,7 @@ data PropertySuperTree a b = PropertySuperTree
 -- Tree with super smart nodes
 data SuperNode a = SuperRoot | SuperNode { myRootLabel :: a
                                          , myParent    :: SuperNode a
-                                         , myLeaves    :: M.Map a Int }
+                                         , myLeaves    :: M.Map a (Int, Int) }
                                          deriving (Read, Show, Eq, Ord)
 
 -- Basic
