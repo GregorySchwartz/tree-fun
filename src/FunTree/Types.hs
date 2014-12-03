@@ -3,6 +3,8 @@
 
 -- | Collects all types used in the program
 
+{-# LANGUAGE BangPatterns #-}
+
 module FunTree.Types where
 
 -- Built-in
@@ -12,13 +14,13 @@ import Data.Tree
 
 -- Algebraic
 data PropertySuperTree a b = PropertySuperTree
-                             { superTree       :: Tree (SuperNode a)
-                             , superProperties :: PropertyMap a b }
+                             { superTree       :: !(Tree (SuperNode a))
+                             , superProperties :: !(PropertyMap a b) }
 
 -- Tree with super smart nodes
-data SuperNode a = SuperRoot | SuperNode { myRootLabel :: a
-                                         , myParent    :: SuperNode a
-                                         , myLeaves    :: M.Map a (Int, Int) }
+data SuperNode a = SuperRoot | SuperNode { myRootLabel :: !a
+                                         , myParent    :: !(SuperNode a)
+                                         , myLeaves    :: !(M.Map a (Int, Int)) }
                                          deriving (Read, Show, Eq, Ord)
 
 -- Basic
