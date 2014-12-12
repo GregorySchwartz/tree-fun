@@ -91,6 +91,10 @@ numInner = genericLength . innerNodes
 getProperties :: (Eq b) => PropertyMap a b -> [b]
 getProperties = nub . M.elems
 
+-- | Remove leaves from a tree
+filterLeaves :: Tree a -> Tree a
+filterLeaves tree = tree {subForest = filter (not . isLeaf) . subForest $ tree}
+
 -- | Return the map of distances from each leaf to another leaf
 getDistanceMap :: (Eq a, Ord a) => Tree a -> DistanceMap a
 getDistanceMap tree = M.fromListWith (M.unionWith (S.><))
