@@ -28,4 +28,4 @@ type Height = Int
 
 -- Advanced
 type DistanceMap a = M.Map a (M.Map Int (S.Seq a))
-type PropertyMap a b = M.Map a b
+type PropertyMap a b = M.Map a (S.Seq b)

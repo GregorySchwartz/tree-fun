@@ -89,7 +89,7 @@ numInner = genericLength . innerNodes
 
 -- | Return the list of properties in a property map for a tree
 getProperties :: (Eq b) => PropertyMap a b -> [b]
-getProperties = nub . M.elems
+getProperties = nub . F.toList . F.foldl' (S.><) S.empty . M.elems
 
 -- | Remove leaves from a tree
 filterLeaves :: Tree a -> Tree a
