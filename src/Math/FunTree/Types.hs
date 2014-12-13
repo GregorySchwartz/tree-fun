@@ -27,5 +27,6 @@ data SuperNode a = SuperRoot | SuperNode { myRootLabel :: !a
 type Height = Int
 
 -- Advanced
-type DistanceMap a = M.Map a (M.Map Int (S.Seq a))
-type PropertyMap a b = M.Map a (S.Seq b)
+type DistanceMap a        = M.Map a (M.Map Int (S.Seq a))
+type PropertyMap a b      = M.Map a (S.Seq b)
+type MaybePropertyMap a b = M.Map a (Maybe (S.Seq b))
