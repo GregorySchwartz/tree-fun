@@ -87,6 +87,11 @@ numLeaves = genericLength . leaves
 numInner :: (Num b) => Tree a -> b
 numInner = genericLength . innerNodes
 
+-- | Return True if a tree has a leaf connected to the root of the given
+-- tree
+hasRootLeaf :: Tree a -> Bool
+hasRootLeaf (Node { subForest = ts }) = not . null . filter isLeaf $ ts
+
 -- | Return the list of properties in a property map for a tree
 getProperties :: (Eq b) => PropertyMap a b -> [b]
 getProperties = nub . F.toList . F.foldl' (S.><) S.empty . M.elems
