@@ -64,6 +64,39 @@ leavesCommonHeight startHeight tree = evalState (iter startHeight tree) 0
         -- Combine the results
         return . M.unions . (++) ts $ ls
 
+-- | Return the labels of the leaves of the tree with their weights
+-- determined by the product of the number of children of their parents all
+-- the way up to the root.
+leavesParentMult :: (Ord a) => Int -> Tree a -> M.Map a Int
+leavesParentMult w (Node { rootLabel = x, subForest = [] }) = M.singleton x w
+leavesParentMult w (Node { rootLabel = _, subForest = xs }) =
+    M.unions . map (leavesParentMult (w * length xs)) $ xs
+
+-- | Return the labels of the leaves of the tree with their weights
+-- determined by the product of the number of children of their parents all
+-- the way up to the root. Also, here we give leaves that share a parent
+-- a separate label.
+leavesCommonParentMult :: (Ord a) => Int -> Tree a -> M.Map a (Int, Int)
+leavesCommonParentMult numChildren tree = evalState (iter numChildren tree) 0
+  where
+    iter multChildren (Node { rootLabel = x, subForest = [] }) = do
+        label <- get
+        return $ M.singleton x (multChildren, label)
+    iter multChildren (Node { rootLabel = _, subForest = xs }) = do
+        -- Get leaves and assign them the label
+        ls    <- mapM (iter (multChildren * length xs)) . filter isLeaf $ xs
+
+        -- Increment label
+        label <- get
+        put $ label + 1
+
+        -- Get rest of the trees
+        ts    <- mapM (iter (multChildren * length xs))
+               . filter (not . isLeaf)
+               $ xs
+        -- Combine the results
+        return . M.unions . (++) ts $ ls
+
 -- | Return the labels of the leaves of the tree with their relative heights
 -- from the root (the input number you give determines how many steps away the
 -- leaves are, should almost always start at 0), slower version not requiring
