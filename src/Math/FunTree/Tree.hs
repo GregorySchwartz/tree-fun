@@ -3,6 +3,8 @@
 
 -- | Collects all functions pertaining to trees
 
+{-# LANGUAGE BangPatterns #-}
+
 module Math.FunTree.Tree where
 
 -- Built-in
@@ -37,8 +39,8 @@ leaves (Node { rootLabel = _, subForest = xs }) = concatMap leaves xs
 -- from the root (the input number you give determines how many steps away the
 -- leaves are, should almost always start at 0)
 leavesHeight :: (Ord a) => Int -> Tree a -> M.Map a Int
-leavesHeight h (Node { rootLabel = x, subForest = [] }) = M.singleton x h
-leavesHeight h (Node { rootLabel = _, subForest = xs }) =
+leavesHeight !h (Node { rootLabel = x, subForest = [] }) = M.singleton x h
+leavesHeight !h (Node { rootLabel = _, subForest = xs }) =
     M.unions . map (leavesHeight (h + 1)) $ xs
 
 -- | Return the labels of the leaves of the tree with their relative heights
@@ -48,10 +50,10 @@ leavesHeight h (Node { rootLabel = _, subForest = xs }) =
 leavesCommonHeight :: (Ord a) => Int -> Tree a -> M.Map a (Int, Int)
 leavesCommonHeight startHeight tree = evalState (iter startHeight tree) 0
   where
-    iter h (Node { rootLabel = x, subForest = [] }) = do
+    iter !h (Node { rootLabel = x, subForest = [] }) = do
         label <- get
         return $ M.singleton x (h, label)
-    iter h (Node { rootLabel = _, subForest = xs }) = do
+    iter !h (Node { rootLabel = _, subForest = xs }) = do
         -- Get leaves and assign them the label
         ls    <- mapM (iter (h + 1)) . filter isLeaf $ xs
 
@@ -68,8 +70,8 @@ leavesCommonHeight startHeight tree = evalState (iter startHeight tree) 0
 -- determined by the product of the number of children of their parents all
 -- the way up to the root.
 leavesParentMult :: (Ord a) => Int -> Tree a -> M.Map a Int
-leavesParentMult w (Node { rootLabel = x, subForest = [] }) = M.singleton x w
-leavesParentMult w (Node { rootLabel = _, subForest = xs }) =
+leavesParentMult !w (Node { rootLabel = x, subForest = [] }) = M.singleton x w
+leavesParentMult !w (Node { rootLabel = _, subForest = xs }) =
     M.unions . map (leavesParentMult (w * length xs)) $ xs
 
 -- | Return the labels of the leaves of the tree with their weights
