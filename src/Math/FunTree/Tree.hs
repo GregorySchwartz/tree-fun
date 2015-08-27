@@ -68,11 +68,11 @@ leavesCommonHeight startHeight tree = evalState (iter startHeight tree) 0
 
 -- | Return the labels of the leaves of the tree with their weights
 -- determined by the product of the number of children of their parents all
--- the way up to the root.
-leavesParentMult :: (Ord a) => Int -> Tree a -> M.Map a Int
+-- the way up to the root. Returns Double for more precision.
+leavesParentMult :: (Ord a) => Double -> Tree a -> M.Map a Double
 leavesParentMult !w (Node { rootLabel = x, subForest = [] }) = M.singleton x w
 leavesParentMult !w (Node { rootLabel = _, subForest = xs }) =
-    M.unions . map (leavesParentMult (w * length xs)) $ xs
+    M.unions . map (leavesParentMult (w * genericLength xs)) $ xs
 
 -- | Return the labels of the leaves of the tree with their weights
 -- determined by the product of the number of children of their parents all
