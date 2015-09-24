@@ -5,7 +5,7 @@
 
 {-# LANGUAGE BangPatterns #-}
 
-module Math.FunTree.Tree where
+module Math.TreeFun.Tree where
 
 -- Built-in
 import Data.List
@@ -18,7 +18,7 @@ import qualified Data.Foldable as F
 import Control.Monad.State
 
 -- Local
-import Math.FunTree.Types
+import Math.TreeFun.Types
 
 -- | Convert a bool to an integer
 boolToInt :: Bool -> Int

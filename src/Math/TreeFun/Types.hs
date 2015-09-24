@@ -3,9 +3,7 @@
 
 -- | Collects all types used in the program
 
-{-# LANGUAGE BangPatterns #-}
-
-module Math.FunTree.Types where
+module Math.TreeFun.Types where
 
 -- Built-in
 import qualified Data.Map as M
