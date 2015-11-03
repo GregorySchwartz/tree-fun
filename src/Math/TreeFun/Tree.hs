@@ -132,6 +132,10 @@ numInner = genericLength . innerNodes
 hasRootLeaf :: Tree a -> Bool
 hasRootLeaf (Node { subForest = ts }) = not . null . filter isLeaf $ ts
 
+-- | Return the list of root leaves
+getRootLeaves :: Tree a -> [a]
+getRootLeaves (Node { subForest = ts }) = map rootLabel . filter isLeaf $ ts
+
 -- | Return the list of properties in a property map for a tree
 getProperties :: (Eq b) => PropertyMap a b -> [b]
 getProperties = nub . F.toList . F.foldl' (S.><) S.empty . M.elems
@@ -139,6 +143,11 @@ getProperties = nub . F.toList . F.foldl' (S.><) S.empty . M.elems
 -- | Remove leaves from a tree
 filterLeaves :: Tree a -> Tree a
 filterLeaves tree = tree {subForest = filter (not . isLeaf) . subForest $ tree}
+
+-- | Remove leaves attached to the root of the tree
+filterRootLeaves :: Tree a -> Tree a
+filterRootLeaves root@(Node { subForest = ts }) =
+    root { subForest = filter (not . isLeaf) ts }
 
 -- | Return the map of distances from each leaf to another leaf
 getDistanceMap :: (Eq a, Ord a) => Tree a -> DistanceMap a
